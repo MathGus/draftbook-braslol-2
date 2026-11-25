@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10121d">
+  <meta name="description" content="Consulte counters, sinergias e confrontos de cada campeão de BRASLOL 2, mesmo depois do pick.">
+  <title>Draftbook · Guia de draft do BRASLOL 2</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/fonts/fonts.css">
+  <link rel="stylesheet" href="style.css">
+  <script defer src="draft-data.js"></script>
+  <script defer src="assets/champion-metadata.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#ficha">Ir para a ficha</a>
+  <header class="masthead">
+    <div class="top-inner">
+      <a class="brand" href="#Vi/Jungle" aria-label="Draftbook, ficha da Vi"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span><b>DRAFTBOOK</b><span class="game-name">BRASLOL 2</span></a>
+      <span class="current-nav">Guia de draft</span>
+      <button id="about-open" class="about-button" type="button"><span data-icon="info"></span><span>Sobre os dados</span></button>
+    </div>
+  </header>
+  <main class="layout">
+    <button class="open-library" id="library-open" type="button" aria-controls="library" aria-expanded="false"><span data-icon="search"></span> Buscar campeão</button>
+    <div id="scrim" class="scrim" hidden></div>
+    <aside class="library" id="library" aria-label="Biblioteca de campeões">
+      <div class="library-controls">
+        <div class="library-title"><h2>Campeões</h2><span id="champion-count" class="count">–</span><button id="library-close" class="icon-only" aria-label="Fechar busca" type="button"><span data-icon="close"></span></button></div>
+        <div class="searchbox"><span data-icon="search"></span><input id="search" type="search" autocomplete="off" aria-label="Buscar campeão" placeholder="Buscar campeão"><kbd aria-hidden="true">/</kbd></div>
+        <div class="lane-select"><span data-icon="filter"></span><select id="lane-filter" aria-label="Filtrar campeões por rota"><option value="">Todas as rotas</option></select><span data-icon="chevron"></span></div>
+      </div>
+      <div class="champion-scroll" id="champion-scroll"><div class="champion-grid" id="champion-grid"></div><p id="empty-search" hidden>Nenhum campeão encontrado.</p></div>
+    </aside>
+    <article id="ficha" class="sheet" tabindex="-1" aria-label="Ficha do campeão">
+      <div class="hero">
+        <img id="splash" alt="" fetchpriority="high">
+        <div class="hero-shade"></div>
+        <div class="hero-body">
+          <div id="classes" class="classes"></div>
+          <h1 id="champion-name">Vi</h1>
+          <p id="champion-title" class="champion-title"></p>
+        </div>
+        <div class="hero-bottom"><span data-icon="position"></span><span id="hero-lanes"></span></div>
+      </div>
+      <div class="section-head">
+        <h2>Confrontos de rota</h2>
+        <div class="matchup-controls"><label for="matchup-lane">Rota analisada</label><div class="analysis-select"><select id="matchup-lane" aria-label="Rota analisada"></select><span data-icon="chevron"></span></div></div>
+      </div>
+      <div class="matchup-grid">
+        <section class="panel matchup strong"><div class="panel-title"><span class="badge-icon" data-icon="strength"></span><h3>Forte contra</h3></div><ul id="strong-list" class="relation-list"></ul></section>
+        <section class="panel matchup weak"><div class="panel-title"><span class="badge-icon" data-icon="weakness"></span><h3>Fraco contra</h3></div><ul id="weak-list" class="relation-list"></ul></section>
+      </div>
+      <div class="lower-grid">
+        <section class="panel synergy"><div class="panel-title"><span class="badge-icon" data-icon="synergy"></span><h3>Sinergias</h3></div><div id="synergy-list"></div></section>
+        <section class="panel phases"><div class="panel-title"><span class="badge-icon" data-icon="chart"></span><h3>Força por fase</h3></div><div id="phase-bars"></div></section>
+      </div>
+      <footer class="sheet-footer">Dados de draft do BRASLOL 2 <span aria-hidden="true">·</span> Arte dos campeões por Riot Games</footer>
+    </article>
+  </main>
+  <dialog id="about"><div class="dialog-head"><h2>Sobre os dados</h2><button type="button" class="icon-only" id="about-close" aria-label="Fechar"><span data-icon="close"></span></button></div>
+    <p id="coverage"></p>
+    <p><b>Forte contra</b> e <b>Fraco contra</b> reproduzem a ficha do campeão selecionado na rota indicada. Cada lista tem até três adversários. São indicações do jogo, não taxas de vitória.</p>
+    <p><b>Sinergias</b> mostra as duplas especiais cadastradas para essa rota e a posição do aliado. Uma dupla pode funcionar mesmo sem ter um combo cadastrado.</p>
+    <p><b>Força por fase</b> mostra os valores do perfil do campeão no início, no meio e no fim da partida, em uma escala de 0 a 100.</p>
+    <div class="source-links" id="sources"></div>
+  </dialog>
+  <noscript>Ative o JavaScript para buscar campeões e consultar suas fichas.</noscript>
+</body>
+</html>
