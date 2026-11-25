@@ -115,31 +115,10 @@ svg.icon {
   letter-spacing: 0.012em;
 }
 .brand-mark {
-  position: relative;
-  width: 27px;
-  height: 28px;
-  display: inline-block;
+  width: 44px;
+  height: 44px;
+  display: block;
   flex: none;
-}
-.brand-mark i {
-  width: 19px;
-  height: 12px;
-  position: absolute;
-  left: 4px;
-  transform: rotate(-30deg) skewX(30deg);
-  border: 2px solid var(--aqua);
-  border-radius: 1px;
-  background: #12151e;
-}
-.brand-mark i:nth-child(1) {
-  top: 13px;
-}
-.brand-mark i:nth-child(2) {
-  top: 8px;
-}
-.brand-mark i:nth-child(3) {
-  top: 3px;
-  background: var(--aqua);
 }
 .game-name {
   font-weight: 700;
@@ -803,6 +782,10 @@ dialog p {
   .brand {
     gap: 0.55rem;
   }
+  .brand-mark {
+    width: 36px;
+    height: 36px;
+  }
   .brand b {
     font-size: 1.5rem;
   }
@@ -936,13 +919,17 @@ dialog p {
     min-height: 5.8rem;
     display: grid;
     grid-template-columns: 1fr auto;
-    grid-template-rows: 3.2rem 2.6rem;
+    grid-template-rows: 3.2rem auto;
     gap: 0 0.5rem;
   }
   .guide-nav {
     grid-column: 1/-1;
     grid-row: 2;
-    gap: 1.2rem;
+    flex-wrap: wrap;
+    gap: 0 1.2rem;
+  }
+  .guide-nav a {
+    min-height: 2.6rem;
   }
   .about-button {
     grid-column: 2;
