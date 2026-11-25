@@ -1,0 +1,56 @@
+.ad-placement {
+  position: var(--ad-position, static);
+  inset-block-start: 0.5rem;
+  inset-inline-start: calc(100% + 8px);
+  width: min(100%, var(--ad-width, 728px));
+  margin: 1.5rem auto 0;
+  color: var(--muted);
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+.ad-placement .adsbygoogle {
+  display: block;
+  width: 100%;
+  height: var(--ad-height, 90px);
+  margin-top: 0.35rem;
+}
+
+.ad-placement:has(ins[data-ad-status='unfilled']) {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .ad-placement {
+    --ad-width: 320px;
+    --ad-height: 50px;
+  }
+}
+
+/* Cada página conserva a largura do conteúdo e só usa a lateral quando cabem 160 px. */
+@media (min-width: 1640px) {
+  .meta-layout {
+    position: relative;
+    --ad-position: absolute;
+    --ad-width: 160px;
+    --ad-height: 600px;
+  }
+}
+
+@media (min-width: 1810px) {
+  .sim-layout {
+    position: relative;
+    --ad-position: absolute;
+    --ad-width: 160px;
+    --ad-height: 600px;
+  }
+}
+
+@media (min-width: 1920px) {
+  .layout {
+    position: relative;
+    --ad-position: absolute;
+    --ad-width: 160px;
+    --ad-height: 600px;
+  }
+}

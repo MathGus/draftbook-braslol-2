@@ -34,6 +34,12 @@ npx prettier@3.6.2 --write "dist/**/*.{js,html,css}" "scripts/*.mjs"
 
 Os scripts de atualização já gravam as tabelas de campeões com dois espaços de indentação.
 
+## Publicidade
+
+O guia, o meta e o simulador têm um espaço para um anúncio de display manual. Ele fica na margem direita em telas largas e antes do rodapé nas demais. Com os identificadores em branco, o guia mantém o espaço oculto e dispensa o carregamento do AdSense.
+
+Para ativar, verifique o domínio no AdSense e aguarde o status **Pronto**. Configure a divulgação de privacidade e as mensagens de consentimento aplicáveis à veiculação. Mantenha **Anúncios automáticos** desativados e crie um bloco de **Display** responsivo. Copie os valores públicos de `data-ad-client` e `data-ad-slot` do bloco para `publisherId` e `slotId` em [publicidade.js](dist/publicidade.js). [Cadastro e verificação do site](https://support.google.com/adsense/answer/12169212?hl=pt-BR) · [Privacidade e mensagens](https://support.google.com/adsense/answer/13554116?hl=pt-BR)
+
 ## Dados e créditos
 
 - As fichas de confronto, sinergias, perfis e regras de meta vêm do BRASLOL 2. [Jogo](https://braslol2.pages.dev/) · [Importação das tabelas](scripts/atualizar-dados.mjs)
