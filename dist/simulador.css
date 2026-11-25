@@ -15,8 +15,19 @@
 .sim-meta-controls{text-align:right;max-width:22rem}.sim-meta-controls label{display:inline-flex;align-items:center;gap:.45rem;font-weight:650}.sim-meta-controls input{width:1.05rem;height:1.05rem;accent-color:var(--aqua)}
 .sim-meta-controls p{margin-top:.2rem}.sim-meta-controls a,.sim-analysis a{color:var(--aqua);text-underline-offset:.2em}
 .sim-board{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1rem 0;outline:0}
-.sim-board-toolbar{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.45rem .8rem}
+.sim-board-toolbar{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:.2rem .6rem}
 .sim-board-toolbar h2{font-size:2rem}
+.swap-hint { grid-column: 1/-1; margin: 0; color: var(--muted); font-size: .87rem; }
+.swap-status { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.sim-picks .sim-slot[data-filled="true"] { cursor: grab; touch-action: pan-y pinch-zoom; user-select: none; }
+.sim-picks.swap-active .sim-slot { border-color: var(--team); border-style: dashed; }
+.sim-picks.swap-active .swap-source { opacity: .55; cursor: grabbing; }
+.sim-picks.swap-active .swap-target { outline: 2px solid var(--team); outline-offset: -2px; background: #303a48; }
+.swap-ghost { position: fixed; top: 0; left: 0; z-index: 30; width: 2.6rem; height: 2.6rem; object-fit: cover; border: 1px solid var(--ink); border-radius: 5px; pointer-events: none; }
+.swap-controls { display: flex; align-items: center; flex-wrap: wrap; gap: .45rem; margin-bottom: .7rem; font-size: .85rem; }
+.swap-controls label { font-weight: 650; }
+.swap-controls select { min-width: 0; flex: 1; color: var(--ink); background: #11151f; border: 1px solid #424959; border-radius: 5px; padding: .35rem; }
+.swap-controls .sim-secondary { min-height: 2.1rem; padding: .35rem .65rem; font-size: inherit; }
 #sim-reset{display:inline-flex;align-items:center;gap:.4rem}
 #sim-reset span{font-size:1.25em;line-height:1}
 .sim-team,.sim-panel{min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:clamp(.85rem,1.4vw,1.25rem)}

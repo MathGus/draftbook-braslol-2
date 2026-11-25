@@ -9,6 +9,16 @@
   const groupNames = {lanes:'Confrontos de rota',cross:'Counters entre rotas',synergies:'Sinergias',meta:'Meta',structure:'Estrutura da composição',scenarios:'Cenários de jogo'};
   const draftKey = 'draftbook.simulator.v1';
   const metaKey = 'draftbook.career-meta.v1';
+  const query = new URLSearchParams(location.search);
+  const forecastDate = query.get('date');
+  const forecastStage = query.get('stage') || undefined;
+  const metaQuery = new URLSearchParams();
+  if (forecastDate !== null) {
+    metaQuery.set('date', forecastDate);
+    if (forecastStage) metaQuery.set('stage', forecastStage);
+  }
+  const metaAddress = forecastDate === null ? 'meta.html' : 'meta.html?' + metaQuery;
+  const dateFormat = new Intl.DateTimeFormat('pt-BR', {timeZone:'UTC'});
   const numbers = new Intl.NumberFormat('pt-BR',{maximumFractionDigits:1, signDisplay:'exceptZero'});
   const textKey = value => value.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');
   const searchKeys = new Map(champions.map(c => [c.id,[c.name,c.id].map(textKey)]));
@@ -43,11 +53,35 @@
     return next;
   }
   let state = restoreDraft(), meta = null, editing = null;
+  let metaNotice = '';
+  let forecastEnabled = query.get('meta') !== 'off';
+  const useMeta = () => forecastDate === null ? state.useMeta : forecastEnabled;
   const picker = $('sim-picker');
   const input = $('sim-search');
   function readMeta() {
     const value = getJson(metaKey);
     meta = value && lanes.every(lane => ['S','A','F'].every(t => Array.isArray(value.lanes?.[lane]?.[t]))) ? value : null;
+    metaNotice = '';
+    if (forecastDate === null) {
+      const savedDay = new Date(meta?.source?.date);
+      if (meta?.source && Number.isFinite(savedDay.getTime())) {
+        metaNotice = 'Meta do save · ' + dateFormat.format(savedDay) + ' · ' + meta.stageLabel + ' ' + meta.year;
+      }
+      return;
+    }
+    if (!meta?.source) {
+      metaNotice = meta ? 'Reimporte o save para consultar outra data.' : 'Carregue o save da carreira para calcular este meta.';
+      meta = null;
+      return;
+    }
+    try {
+      const date = window.CAREER_META.dateFromInput(forecastDate);
+      meta = window.CAREER_META.project(meta, date, forecastStage);
+      metaNotice = (meta.projection ? 'Meta-base' : 'Meta do save') + ' · ' + dateFormat.format(date) + ' · ' + meta.stageLabel + ' ' + meta.year;
+    } catch {
+      metaNotice = 'Confira a data e a etapa na consulta de meta.';
+      meta = null;
+    }
   }
   function saveDraft() {
     try { localStorage.setItem(draftKey,JSON.stringify(state)); } catch {}
@@ -78,6 +112,41 @@
     img.alt = ''; img.decoding = 'async';
     img.src = 'assets/champions/' + encodeURIComponent(id) + '.webp';
     return img;
+  }
+  function movePick(side, from, to, expectedId) {
+    if (!sides.includes(side) || !lanes.includes(from) || !lanes.includes(to) || from === to) return false;
+    const team = state.picks[side];
+    const moving = team[from], displaced = team[to];
+    if (!moving || moving !== expectedId) return false;
+    [team[from], team[to]] = [displaced, moving];
+    saveDraft();
+    render();
+    const message = byId.get(moving).name + ' em ' + laneNames[to];
+    $('sim-swap-status').textContent = sideNames[side] + ' · ' + message
+      + (displaced ? ' e ' + byId.get(displaced).name + ' em ' + laneNames[from] : '') + '.';
+    if (picker.open) {
+      editing.slot = to;
+      closePicker();
+    } else {
+      $('sim-picks-' + side).querySelector('[data-slot="' + to + '"]').focus({preventScroll:true});
+    }
+    return true;
+  }
+
+  function showMoveControls() {
+    const id = editing.kind === 'pick' && current(editing);
+    $('sim-swap-controls').hidden = !id;
+    if (!id) return;
+    const select = $('sim-swap-lane');
+    select.dataset.sourceId = id;
+    select.replaceChildren(new Option('Escolha a rota', ''));
+    for (const lane of lanes) {
+      if (lane === editing.slot) continue;
+      const occupant = byId.get(state.picks[editing.side][lane]);
+      select.add(new Option(laneNames[lane] + ' · ' + (occupant?.name || 'Livre'), lane));
+    }
+    $('sim-swap-action').disabled = true;
+    $('sim-swap-action').textContent = 'Mover';
   }
   function slotButton(side, kind, slot) {
     const item = {side, kind, slot}, id = current(item), champ = byId.get(id);
@@ -110,6 +179,7 @@
     const position = slot.kind === 'pick' ? laneNames[slot.slot] : 'Ban ' + (Number(slot.slot)+1);
     $('sim-picker-context').textContent = sideNames[slot.side] + ' · ' + position;
     $('sim-picker-title').textContent = slot.kind === 'pick' ? 'Escolher campeão' : 'Banir campeão';
+    showMoveControls();
     $('sim-remove').hidden = !current(slot);
     $('sim-remove').textContent = slot.kind === 'pick' ? 'Remover escolha' : 'Remover banimento';
     $('sim-flex-control').hidden = slot.kind === 'ban';
@@ -208,14 +278,16 @@
     $('sim-analysis-hint').textContent = 'Pontos positivos favorecem seu time. '+(result.complete ? 'O saldo inclui estrutura e cenários dos dois times.' : 'Estrutura e cenários entram no cálculo quando os dez picks estão definidos.');
     $('sim-reset').disabled = count + bans === 0;
     const include = $('sim-use-meta');
-    include.disabled = !meta; include.checked = Boolean(meta && state.useMeta);
+    include.disabled = !meta; include.checked = Boolean(meta && useMeta());
     const context = $('sim-meta-context');
-    const link = el('a','',meta ? 'Ver meta' : 'Carregar meu save');link.href = 'meta.html';
+    const link = el('a','',meta ? 'Consultar por data' : forecastDate === null ? 'Carregar meu save' : 'Abrir meta da carreira');
+    link.href = metaAddress;
     context.replaceChildren();
+    if (metaNotice) context.append(metaNotice, el('br'));
     if (meta) {
       const alternative = result.metaUsed ? result.score - result.breakdown.meta : window.DRAFT_ANALYZER.analyze({...state.picks,meta}).score;
       context.append((result.metaUsed ? 'Sem meta: ' : 'Com meta: ') + numbers.format(Math.round(alternative*10)/10) + ' · ', link);
-    } else context.append('Draft sem meta. ',link);
+    } else context.append(metaNotice ? '' : 'Draft sem meta. ',link);
     const analysis = $('sim-analysis');
     const expanded = Boolean(analysis.querySelector('details[open]'));
     const lanesRows = result.lanes.filter(row => row.ally && row.enemy).map(row => breakdownLine(name(row.ally) + ' × ' + name(row.enemy),row.points,laneNames[row.lane]+' · '+(row.reason || 'Confronto neutro.')));
@@ -230,18 +302,30 @@
   }
   function suggestionState() {
     return {
-      ...state.picks, bans:[...state.bans.ally,...state.bans.enemy].filter(Boolean),banSlots:state.bans,meta:state.useMeta ? meta : null,
+      ...state.picks, bans:[...state.bans.ally,...state.bans.enemy].filter(Boolean),banSlots:state.bans,meta:useMeta() ? meta : null,
       onPick:(side,lane,id) => change({side,kind:'pick',slot:lane},id),
       onBan:(side,slot,id) => change({side,kind:'ban',slot},id)
     };
   }
   function render() {
+    dragControls.cancel();
     window.MATCHUP_PREVIEW.close();
     const setup = suggestionState();
     renderTeams();renderAnalysis(window.DRAFT_ANALYZER.analyze(setup));
     window.PICK_SUGGESTIONS?.render(setup);
   }
 
+  const dragControls = window.DRAFT_SWAP.bind($('sim-board'), movePick);
+  $('sim-swap-lane').addEventListener('change', event => {
+    const lane = event.target.value;
+    $('sim-swap-action').disabled = !lane;
+    $('sim-swap-action').textContent = state.picks[editing.side][lane] ? 'Trocar' : 'Mover';
+  });
+  $('sim-swap-action').addEventListener('click', () => {
+    if (editing?.kind !== 'pick') return;
+    const select = $('sim-swap-lane');
+    movePick(editing.side, editing.slot, select.value, select.dataset.sourceId);
+  });
   $('sim-board').addEventListener('click', event => {
     const button = event.target.closest('.sim-slot');
     if (button) { const {side,kind,slot} = button.dataset; showPicker({side,kind,slot}); }
@@ -269,8 +353,17 @@
     if (event.clientX<box.left || event.clientX>box.right || event.clientY<box.top || event.clientY>box.bottom) dlg.close();
   });
   $('sim-use-meta').addEventListener('change',event => {
-    state.useMeta = event.target.checked;
-    saveDraft();render();
+    if (forecastDate === null) {
+      state.useMeta = event.target.checked;
+      saveDraft();
+    } else {
+      forecastEnabled = event.target.checked;
+      const url = new URL(location.href);
+      if (forecastEnabled) url.searchParams.delete('meta');
+      else url.searchParams.set('meta','off');
+      history.replaceState(null,'',url);
+    }
+    render();
   });
   $('sim-reset').addEventListener('click', () => { $('sim-reset-dialog').showModal(); $('reset-cancel').focus(); });
   $('reset-cancel').addEventListener('click', () => $('sim-reset-dialog').close());
@@ -284,7 +377,7 @@
     if (event.key === metaKey || event.key === null) readMeta();
     if (event.key === draftKey || event.key === null) state=restoreDraft();
     render();
-    if (picker.open) renderPool();
+    if (picker.open) { showMoveControls(); renderPool(); }
   });
   readMeta();render();
 })();
