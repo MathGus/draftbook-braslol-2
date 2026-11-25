@@ -106,6 +106,7 @@
   function showPicker(slot) {
     editing = slot;
     if (slot.kind === 'pick') window.PICK_SUGGESTIONS?.focusSlot?.(slot.side,slot.slot);
+    else window.PICK_SUGGESTIONS?.focusBan?.(slot.side,Number(slot.slot));
     const position = slot.kind === 'pick' ? laneNames[slot.slot] : 'Ban ' + (Number(slot.slot)+1);
     $('sim-picker-context').textContent = sideNames[slot.side] + ' · ' + position;
     $('sim-picker-title').textContent = slot.kind === 'pick' ? 'Escolher campeão' : 'Banir campeão';
@@ -122,14 +123,26 @@
     if (!editing) return;
     const term = textKey(input.value);
     const used = allUsed(), selected = current(editing);
-    const suggestions = editing.kind === 'pick' && !input.value.trim() && window.PICK_SUGGESTIONS
-      ? window.PICK_SUGGESTIONS.rank(suggestionState(), editing.side, editing.slot) : [];
+    const isBan = editing.kind === 'ban';
+    let suggestions = [];
+    if (!input.value.trim()) {
+      const board = suggestionState();
+      suggestions = isBan
+        ? window.BAN_SUGGESTIONS?.rank(board,editing.side) || []
+        : window.PICK_SUGGESTIONS?.rank(board,editing.side,editing.slot) || [];
+    }
     $('picker-suggest').hidden = !suggestions.length;
-    $('picker-suggest-list').replaceChildren(...suggestions.map(({champion}) => {
-      const button = el('button','quick-pick');
+    $('picker-suggest').dataset.kind = editing.kind;
+    $('picker-suggest-title').textContent = isBan ? 'Banimentos sugeridos' : 'Sugeridos para este pick';
+    $('picker-suggest-list').replaceChildren(...suggestions.map(({champion,lane,reasons}) => {
+      const button = el('button',isBan ? 'quick-pick quick-ban' : 'quick-pick');
       button.type = 'button';button.dataset.id = champion.id;
-      button.setAttribute('aria-label','Escolher '+champion.name);
+      const reason = isBan ? (reasons || []).join(' ') : '';
+      const label = (isBan ? 'Banir ' : 'Escolher ') + champion.name;
+      button.title = [label,laneNames[lane],reason].filter(Boolean).join(' · ');
+      button.setAttribute('aria-label',button.title);
       button.append(image(champion.id),el('span','',champion.name));
+      if (isBan && reasons?.[0]) button.append(el('small','quick-reason',reasons[0]));
       return button;
     }));
     const flex = $('sim-allow-flex').checked;
@@ -212,8 +225,9 @@
   }
   function suggestionState() {
     return {
-      ...state.picks, bans:[...state.bans.ally,...state.bans.enemy].filter(Boolean),meta:state.useMeta ? meta : null,
-      onPick:(side,lane,id) => change({side,kind:'pick',slot:lane},id)
+      ...state.picks, bans:[...state.bans.ally,...state.bans.enemy].filter(Boolean),banSlots:state.bans,meta:state.useMeta ? meta : null,
+      onPick:(side,lane,id) => change({side,kind:'pick',slot:lane},id),
+      onBan:(side,slot,id) => change({side,kind:'ban',slot},id)
     };
   }
   function render() {

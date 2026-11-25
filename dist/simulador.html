@@ -9,13 +9,14 @@
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="assets/fonts/fonts.css">
   <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="simulador.css?v=2">
-  <link rel="stylesheet" href="pick-suggestions.css">
+  <link rel="stylesheet" href="simulador.css?v=3">
+  <link rel="stylesheet" href="pick-suggestions.css?v=2">
   <script defer src="draft-data.js"></script>
   <script defer src="meta.js"></script>
   <script defer src="draft-analyzer.js"></script>
-  <script defer src="pick-suggestions.js"></script>
-  <script defer src="simulador.js"></script>
+  <script defer src="ban-suggestions.js?v=1"></script>
+  <script defer src="pick-suggestions.js?v=2"></script>
+  <script defer src="simulador.js?v=2"></script>
 </head>
 <body>
   <a class="skip-link" href="#sim-board">Ir para as escalações</a>
@@ -50,7 +51,7 @@
         <h3 class="bans-title">Banimentos</h3><div id="sim-bans-enemy" class="sim-bans" aria-label="Banimentos do adversário"></div>
       </section>
     </section>
-    <section id="pick-suggestions" class="sim-panel" aria-label="Picks sugeridos"></section>
+    <section id="pick-suggestions" class="sim-panel" aria-label="Sugestões de picks e bans"></section>
     <section aria-labelledby="sim-analysis-title">
       <div class="sim-analysis-heading"><h2 id="sim-analysis-title">Leitura do draft</h2><span id="sim-analysis-state"></span></div>
       <p class="sim-hint" id="sim-analysis-hint"></p>
@@ -63,7 +64,7 @@
     <div class="picker-header"><div><p id="sim-picker-context"></p><h2 id="sim-picker-title">Escolher campeão</h2></div><button id="picker-close" class="icon-only" type="button" aria-label="Fechar seleção">×</button></div>
     <input type="search" id="sim-search" autocomplete="off" aria-label="Buscar campeão" placeholder="Buscar campeão">
     <label id="sim-flex-control" class="sim-flex-control"><input id="sim-allow-flex" type="checkbox"> Incluir outras rotas</label>
-    <section class="picker-suggest" id="picker-suggest" hidden aria-label="Sugestões para esta posição"><h3>Sugeridos para este pick</h3><div id="picker-suggest-list"></div></section>
+    <section class="picker-suggest" id="picker-suggest" hidden aria-labelledby="picker-suggest-title"><h3 id="picker-suggest-title">Sugeridos para este pick</h3><div id="picker-suggest-list"></div></section>
     <div class="picker-info"><span id="sim-pool-count"></span><button type="button" id="sim-remove" class="sim-text" hidden>Remover deste slot</button></div>
     <div id="sim-pool" class="sim-pool"></div><p id="sim-pool-empty" class="sim-hint" hidden>Nenhum campeão encontrado.</p>
   </dialog>

@@ -3,6 +3,13 @@
 .suggest-title h2{font:700 1.85rem/1.1 var(--display);margin:0}
 .suggest-title p,.suggest-help p,.suggest-none{font-size:.9rem;line-height:1.55;color:var(--muted);margin:.35rem 0 0}
 .suggest-controls{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap}
+.suggest-switch{display:flex;align-items:center;gap:.15rem;padding:.12rem;background:#10151e;border:1px solid var(--line);border-radius:7px}
+.suggest-switch button{font-size:.86rem;color:var(--muted);padding:.33rem .65rem;font-weight:650;border-radius:4px}
+.suggest-switch [aria-pressed=true]{color:var(--aqua);background:#233739}
+[data-mode=ban] .suggest-switch [aria-pressed=true],[data-mode=ban] .suggest-use{color:var(--coral);background:#38272e}
+[data-mode=ban] .suggest-use{border-color:#65424d}
+[data-mode=ban] .suggest-use:hover{border-color:var(--coral);background:#483039}
+[data-mode=ban] .suggest-rank{color:var(--coral)}
 .suggest-select{display:flex;align-items:center;gap:.45rem;font-size:.82rem;color:var(--muted)}
 .suggest-select select{width:auto;color:var(--ink);font-size:.88rem;padding:.4rem 1.65rem .4rem .66rem;background:linear-gradient(45deg,transparent 50%,#a5aec2 50%) calc(100% - 12px) 52%/5px 5px no-repeat,linear-gradient(135deg,#a5aec2 50%,transparent 50%) calc(100% - 7px) 52%/5px 5px no-repeat,#141822;border:1px solid var(--line);border-radius:5px}
 .suggest-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.75rem}

@@ -9,6 +9,8 @@
   let state;
   let side = 'ally';
   let lane = 'Jungle';
+  let mode = 'pick';
+  let banSlot = 0;
 
   function phaseAverage(champion) {
     const { early, mid, late } = champion.profile;
@@ -88,8 +90,39 @@
 
   function focusSlot(forSide,forLane) {
     if(!['ally','enemy'].includes(forSide) || !lanes.includes(forLane)) return;
-    side=forSide;lane=forLane;
+    mode='pick';side=forSide;lane=forLane;
     if(state) render(state);
+  }
+
+  function firstFreeBan(forSide, fallback=0) {
+    const index=state.banSlots[forSide].findIndex(id=>!id);
+    return index < 0 ? fallback : index;
+  }
+
+  function focusBan(forSide,slot) {
+    if(!['ally','enemy'].includes(forSide) || !/^[0-4]$/.test(String(slot))) return;
+    mode='ban';side=forSide;banSlot=Number(slot);
+    if(state) render(state);
+  }
+
+  function modeSwitch() {
+    const group=make('div','suggest-switch');
+    group.setAttribute('role','group');
+    group.setAttribute('aria-label','Tipo de sugestão');
+    for(const [key,label] of [['pick','Picks'],['ban','Bans']]) {
+      const button=make('button','',label);
+      button.type='button';button.id='suggest-mode-'+key;
+      button.setAttribute('aria-pressed',String(mode===key));
+      button.addEventListener('click',()=>{
+        if(key===mode) return;
+        mode=key;
+        if(mode==='ban') banSlot=firstFreeBan(side);
+        render(state);
+        document.getElementById(button.id)?.focus({preventScroll:true});
+      });
+      group.append(button);
+    }
+    return group;
   }
 
   function render(setup) {
@@ -98,32 +131,57 @@
     const target=document.getElementById('pick-suggestions');
     if(!target) return;
     const header=make('div','suggest-head'),title=make('div','suggest-title');
-    title.append(make('h2','','Picks sugeridos'));
-    const selected=byId.get(setup[side][lane]);
-    const note=selected ? 'Alternativas para substituir '+selected.name+' na rota.' : 'Opções disponíveis para a próxima escolha.';
+    const banning=mode==='ban';
+    target.dataset.mode=mode;
+    title.append(make('h2','',banning ? 'Bans sugeridos' : 'Picks sugeridos'));
+    const selected=byId.get(banning ? setup.banSlots[side][banSlot] : setup[side][lane]);
+    const note=banning
+      ? (selected ? 'Alternativas para substituir o ban de '+selected.name+'.' : 'Ameaças nas rotas que o outro time ainda pode preencher.')
+      : (selected ? 'Alternativas para substituir '+selected.name+' na rota.' : 'Opções disponíveis para a próxima escolha.');
     title.append(make('p','',note));
     const controls=make('div','suggest-controls');
-    addSelect(controls,'Lado','side',[['ally','Seu time'],['enemy','Adversário']],side,value=>{side=value;});
-    addSelect(controls,'Rota','lane',lanes.map(r=>[r,laneNames[r]]),lane,value=>{lane=value;});
+    controls.append(modeSwitch());
+    addSelect(controls,'Lado','side',[['ally','Seu time'],['enemy','Adversário']],side,value=>{
+      side=value;
+      if(banning) banSlot=firstFreeBan(value);
+    });
+    if(banning) {
+      const slots=setup.banSlots[side].map((id,i)=>[String(i),String(i+1)+(id?' · '+byId.get(id).name:'')]);
+      addSelect(controls,'Ban','ban-slot',slots,String(banSlot),value=>{banSlot=Number(value);});
+    } else {
+      addSelect(controls,'Rota','lane',lanes.map(r=>[r,laneNames[r]]),lane,value=>{lane=value;});
+    }
     header.append(title,controls);
     const grid=make('div','suggest-grid');
-    const best=rank(setup,side,lane);
+    const best=banning ? window.BAN_SUGGESTIONS.rank(setup,side) : rank(setup,side,lane);
     for(const [index,proposal] of best.entries()) {
       const champ=proposal.champion,card=make('article','suggest-card'),identity=make('div','suggest-champ');
       const img=make('img');img.src='assets/champions/'+encodeURIComponent(champ.id)+'.webp';img.alt='';img.width=42;img.height=42;
       identity.append(img,make('h3','',champ.name),make('span','suggest-rank',String(index+1)+'º'));
       const list=make('ul','suggest-reasons');
-      for(const reason of explanations(proposal,side,lane)) list.append(make('li','',reason));
-      const use=make('button','suggest-use',selected ? 'Trocar por '+champ.name : 'Escolher '+champ.name);
-      use.type='button';use.dataset.pick=champ.id;
+      const reasons=banning ? proposal.reasons : explanations(proposal,side,lane);
+      for(const reason of reasons) list.append(make('li','',reason));
+      const use=make('button','suggest-use',selected ? 'Trocar por '+champ.name : (banning ? 'Banir ' : 'Escolher ')+champ.name);
+      use.type='button';use.dataset[mode]=champ.id;
       use.addEventListener('click',()=>{
+        if(banning) {
+          const slot=banSlot;
+          const next=setup.banSlots[side].findIndex((id,i)=>!id && i!==slot);
+          if(next>=0) banSlot=next;
+          setup.onBan(side,slot,champ.id);
+          return;
+        }
         const chosenSide=side, chosenLane=lane;
         const next=lanes.find(r=>r!==chosenLane && !state[chosenSide][r]);
         if(next) lane=next;
         setup.onPick(chosenSide,chosenLane,champ.id);
       });
       card.append(identity,list);
-      if(setup.meta || [...Object.values(setup.ally),...Object.values(setup.enemy)].some(Boolean)) {
+      if(banning) {
+        const position=make('p','suggest-projection','Rota avaliada');
+        position.append(make('strong','',laneNames[proposal.lane]));
+        card.append(position);
+      } else if(setup.meta || [...Object.values(setup.ally),...Object.values(setup.enemy)].some(Boolean)) {
         const projection=make('p','suggest-projection','Saldo com este pick');
         projection.append(make('strong','',scoreFormat.format(proposal.score)+' pts'));
         card.append(projection);
@@ -131,11 +189,18 @@
       card.append(use);
       grid.append(card);
     }
-    if(!best.length) grid.append(make('p','suggest-none','Todos os campeões disponíveis para esta rota já foram escolhidos ou banidos.'));
+    if(!best.length) {
+      const opponent=side==='ally'?'enemy':'ally';
+      const message=banning ? (lanes.every(r=>setup[opponent][r]) ? 'O outro time já preencheu as cinco rotas.' : 'As rotas abertas do outro time ficaram sem candidatos disponíveis.') : 'Todos os campeões disponíveis para esta rota já foram escolhidos ou banidos.';
+      grid.append(make('p','suggest-none',message));
+    }
     const help=make('details','suggest-help');
-    help.append(make('summary','','Como as sugestões são ordenadas'),make('p','','O guia testa cada campeão disponível nessa rota e compara o saldo projetado para o lado escolhido. Com os dez picks, entram também a estrutura e os cenários da composição. Em caso de empate, prioriza a rota principal, depois a média de força no início, meio e fim da partida. O meta só entra quando está ativado.'));
+    const method=banning
+      ? 'O guia simula os picks disponíveis nas rotas abertas do outro time e indica os campeões que dariam a ele o melhor saldo. Para um campeão flexível, mostra a melhor rota simulada. Em caso de empate, prioriza quem pode preencher mais rotas abertas e depois a média de força nas três fases do jogo. Banir remove uma opção do adversário. O saldo atual só muda com os picks ou com o meta.'
+      : 'O guia testa cada campeão disponível nessa rota e compara o saldo projetado para o lado escolhido. Com os dez picks, entram também a estrutura e os cenários da composição. Em caso de empate, prioriza a rota principal, depois a média de força no início, meio e fim da partida. O meta só entra quando está ativado.';
+    help.append(make('summary','','Como as sugestões são ordenadas'),make('p','',method));
     target.replaceChildren(header,grid,help);
   }
 
-  window.PICK_SUGGESTIONS=Object.freeze({rank,render,focusSlot});
+  window.PICK_SUGGESTIONS=Object.freeze({rank,render,focusSlot,focusBan});
 })();
