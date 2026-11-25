@@ -53,6 +53,21 @@
   const search = $('search'), laneFilter = $('lane-filter'), routeSelect = $('matchup-lane');
   data.lanes.forEach(lane => laneFilter.add(new Option(laneNames[lane],lane)));
   let selectedId;
+  function showCareerTier(champion,lane) {
+    const badge=$('career-tier'), address='meta.html#'+lane;
+    badge.hidden=true;
+    $('meta-nav').href=address;
+    try {
+      const saved=localStorage.getItem('draftbook.career-meta.v1');
+      if(!saved || !window.CAREER_META) return;
+      const meta=JSON.parse(saved);
+      if(!meta?.lanes?.[lane] || !Array.isArray(meta.lanes[lane].S)) return;
+      const tier=window.CAREER_META.tierFor(meta,lane,champion.id);
+      if(!['S','A','B','F'].includes(tier)) return;
+      badge.textContent='Tier '+tier+' no seu meta';
+      badge.dataset.tier=tier;badge.href=address;badge.hidden=false;
+    } catch { /* Storage can be unavailable in private or file browsing. */ }
+  }
   function renderLibrary() {
     const term=normalize(search.value), lane=laneFilter.value;
     const visible=sorted.filter(c=>(!lane || c.lanes.includes(lane)) && (!term || searchNames.get(c.id).some(key=>key.includes(term))));
@@ -122,6 +137,7 @@
     const art='assets/splash/'+encodeURIComponent(id)+'.webp';
     if($('splash').getAttribute('src')!==art) $('splash').src=art;
     $('hero-lanes').textContent=champion.lanes.map(r=>laneNames[r]).join(' / ');
+    showCareerTier(champion,lane);
     routeSelect.replaceChildren(...champion.lanes.map(r=>new Option(laneNames[r],r,false,lane===r)));
     const matchup=champion.matchups[lane];
     renderMatchup($('strong-list'),matchup.strong,lane);
@@ -159,6 +175,10 @@
   routeSelect.addEventListener('change',()=>{location.hash=address(selectedId,routeSelect.value);});
   search.addEventListener('input',renderLibrary);laneFilter.addEventListener('change',renderLibrary);
   window.addEventListener('hashchange',renderSheet);
+  window.addEventListener('pageshow',renderSheet);
+  window.addEventListener('storage',event=>{
+    if(event.key===null || event.key==='draftbook.career-meta.v1') renderSheet();
+  });
   const dialog=$('about');
   $('about-open').addEventListener('click',()=>dialog.showModal());
   $('about-close').addEventListener('click',()=>dialog.close());

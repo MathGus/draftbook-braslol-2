@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="style.css">
   <script defer src="draft-data.js"></script>
   <script defer src="assets/champion-metadata.js"></script>
+  <script defer src="meta.js"></script>
   <script defer src="app.js"></script>
 </head>
 <body>
@@ -18,7 +19,7 @@
   <header class="masthead">
     <div class="top-inner">
       <a class="brand" href="#Vi/Jungle" aria-label="Draftbook, ficha da Vi"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span><b>DRAFTBOOK</b><span class="game-name">BRASLOL 2</span></a>
-      <span class="current-nav">Guia de draft</span>
+      <nav class="guide-nav" aria-label="Navegação principal"><a href="index.html" aria-current="page">Guia de draft</a><a id="meta-nav" href="meta.html">Meta da carreira</a></nav>
       <button id="about-open" class="about-button" type="button"><span data-icon="info"></span><span>Sobre os dados</span></button>
     </div>
   </header>
@@ -42,7 +43,7 @@
           <h1 id="champion-name">Vi</h1>
           <p id="champion-title" class="champion-title"></p>
         </div>
-        <div class="hero-bottom"><span data-icon="position"></span><span id="hero-lanes"></span></div>
+        <div class="hero-bottom"><span data-icon="position"></span><span id="hero-lanes"></span><a class="meta-badge" id="career-tier" href="meta.html" hidden></a></div>
       </div>
       <div class="section-head">
         <h2>Confrontos de rota</h2>

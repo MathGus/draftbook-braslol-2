@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10121d">
+  <meta name="description" content="Veja os tiers por rota e as estatísticas de draft da sua carreira no BRASLOL 2.">
+  <title>Meta da carreira | Draftbook</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/fonts/fonts.css">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="meta.css">
+  <script defer src="draft-data.js"></script>
+  <script defer src="meta.js"></script>
+  <script defer src="meta-view.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#consulta">Ir para a consulta</a>
+  <header class="masthead"><div class="top-inner">
+    <a class="brand" href="index.html" aria-label="Draftbook, guia de draft"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span><b>DRAFTBOOK</b><span class="game-name">BRASLOL 2</span></a>
+    <nav class="guide-nav" aria-label="Navegação principal"><a href="index.html">Guia de draft</a><a href="meta.html" aria-current="page">Meta da carreira</a></nav>
+  </div></header>
+  <main id="consulta" class="meta-layout" tabindex="-1">
+    <section class="meta-hero" aria-labelledby="meta-title">
+      <div>
+        <h1 id="meta-title">Meta da carreira</h1>
+        <p>Consulte os tiers por rota e as estatísticas de escolha, banimento e vitória da sua temporada.</p>
+      </div>
+    </section>
+    <input id="meta-file" type="file" accept=".json,application/json" hidden>
+    <section id="meta-welcome" class="import-panel" aria-labelledby="import-title">
+      <div class="file-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M6.5 4.5h12L25.5 12v15.5h-19zM18 5v8h7M12 20h8m-4-4v8"/></svg></div>
+      <div class="import-copy">
+        <h2 id="import-title">Abra o save da sua carreira</h2>
+        <p>Arraste o arquivo JSON exportado pelo BRASLOL 2 ou selecione-o no seu dispositivo. O arquivo é lido aqui, no navegador.</p>
+      </div>
+      <button type="button" class="primary-action" id="meta-open">Selecionar save</button>
+    </section>
+    <section id="meta-summary" class="meta-summary" hidden aria-label="Carreira importada">
+      <div class="career-stats">
+        <div><span>Temporada</span><b id="career-year"></b></div>
+        <div><span>Etapa</span><b id="career-stage"></b></div>
+        <div><span>Patch</span><b id="career-patch"></b></div>
+        <div><span>Partidas registradas</span><b id="career-games"></b></div>
+      </div>
+      <div class="career-actions">
+        <button type="button" id="meta-change" class="outlined-action">Trocar save</button>
+        <button type="button" id="meta-clear" class="text-action">Limpar</button>
+      </div>
+    </section>
+    <p id="meta-error" class="notice error" role="alert" hidden></p>
+    <p id="meta-status" class="sr-meta" role="status" aria-live="polite"></p>
+    <details class="meta-help">
+      <summary>Como o jogo define o meta</summary>
+      <div>
+        <p>O jogo sorteia o meta de cada rota para cada etapa da carreira: Split 1, MSI, Split 2 e Worlds. O patch avança a cada duas semanas no calendário. Os tiers mudam na troca de etapa.</p>
+        <p>Cada rota tem dois campeões no tier S, três no A e três no F. Os demais campeões habilitados na rota ficam no B. O pick alternativo do treinador entra no A ao atingir 6 pontos e no S a partir de 14.</p>
+        <p>O jogo simula escolhas, banimentos e resultados ao longo do ano. As taxas acumulam essas partidas em todas as rotas e são independentes das vitórias do seu time. A taxa de vitória divide as vitórias do campeão pelo número de escolhas.</p>
+        <a href="https://braslol2.pages.dev/js/career/meta.js" target="_blank" rel="noopener noreferrer">Cálculo do meta no BRASLOL 2</a>
+      </div>
+    </details>
+    <section id="meta-guide" aria-labelledby="tiers-title" hidden>
+      <div class="tier-heading">
+        <h2 id="tiers-title">Tiers por rota</h2>
+        <div class="lane-tabs" id="lane-tabs" role="tablist" aria-label="Rotas"></div>
+      </div>
+      <p class="tier-note" id="tier-context"></p>
+      <div id="tier-panel" role="tabpanel" aria-describedby="tier-context">
+        <div id="tier-groups"></div>
+      </div>
+    </section>
+    <footer class="sheet-footer">Dados de carreira do BRASLOL 2 <span aria-hidden="true">·</span> Arte dos campeões por Riot Games</footer>
+    <noscript>Ative o JavaScript para abrir seu save e consultar os tiers.</noscript>
+  </main>
+</body>
+</html>
