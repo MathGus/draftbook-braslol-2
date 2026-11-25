@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const publisherId = '';
+  const publisherId = 'ca-pub-5611015326590025';
   const slotId = '';
 
   if (!/^ca-pub-\d{16}$/.test(publisherId) || !/^\d+$/.test(slotId)) return;
