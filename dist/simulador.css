@@ -10,15 +10,19 @@
 .sim-score-number span{display:block;font:700 .8rem var(--body);letter-spacing:.025em;color:#b2c4c8}
 .sim-score-number strong{display:block;font:italic 800 3.5rem/.98 var(--display);margin-top:.25rem;font-variant-numeric:tabular-nums}
 .sim-positive{color:var(--aqua)}.sim-negative{color:var(--coral)}.sim-neutral{color:var(--muted)}
-.sim-score-result h2,.team-heading h2,.sim-analysis-heading h2,.sim-panel h3,.picker-header h2,#sim-reset-dialog h2{font:700 clamp(1.65rem,2.3vw,2.2rem)/1.12 var(--display)}
+.sim-score-result h2,.team-heading h3,.sim-analysis-heading h2,.sim-board-toolbar h2,.sim-panel h3,.picker-header h2,#sim-reset-dialog h2{font:700 clamp(1.65rem,2.3vw,2.2rem)/1.12 var(--display)}
 .sim-score-result p,.sim-meta-controls p,.sim-hint{font-size:.91rem;color:var(--muted)}.sim-score-result p{margin-top:.25rem}
 .sim-meta-controls{text-align:right;max-width:22rem}.sim-meta-controls label{display:inline-flex;align-items:center;gap:.45rem;font-weight:650}.sim-meta-controls input{width:1.05rem;height:1.05rem;accent-color:var(--aqua)}
 .sim-meta-controls p{margin-top:.2rem}.sim-meta-controls a,.sim-analysis a{color:var(--aqua);text-underline-offset:.2em}
 .sim-board{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1rem 0;outline:0}
+.sim-board-toolbar{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.45rem .8rem}
+.sim-board-toolbar h2{font-size:2rem}
+#sim-reset{display:inline-flex;align-items:center;gap:.4rem}
+#sim-reset span{font-size:1.25em;line-height:1}
 .sim-team,.sim-panel{min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:clamp(.85rem,1.4vw,1.25rem)}
 .sim-team{--team:var(--aqua);background:linear-gradient(140deg,#1a272a 0%,#171b25 45%)}
 .sim-team[data-team="enemy"]{--team:var(--coral);background:linear-gradient(140deg,#2b2028 0%,#191c26 45%)}
-.team-heading{margin-bottom:.8rem}.team-heading h2{font-size:1.75rem;color:var(--team)}.team-heading>span,.sim-analysis-heading>span,.picker-info>span{color:var(--muted);font-size:.85rem}
+.team-heading{margin-bottom:.8rem}.team-heading h3{font-size:1.75rem;color:var(--team)}.team-heading>span,.sim-analysis-heading>span,.picker-info>span{color:var(--muted);font-size:.85rem}
 .sim-picks,.sim-bans{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:.36rem}
 .sim-slot{position:relative;min-width:0;width:100%;display:flex;flex-direction:column;align-items:center;gap:.28rem;text-align:center;border:1px solid #393f50;border-radius:7px;background:#121720;color:var(--muted);overflow:hidden;padding:.4rem .2rem}
 .sim-slot[data-filled="false"]{border-style:dashed}.sim-slot:hover{color:var(--ink);border-color:var(--team);background:#1a222f}

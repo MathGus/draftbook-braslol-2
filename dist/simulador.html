@@ -9,14 +9,16 @@
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="assets/fonts/fonts.css">
   <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="simulador.css?v=3">
+  <link rel="stylesheet" href="simulador.css?v=4">
   <link rel="stylesheet" href="pick-suggestions.css?v=2">
+  <link rel="stylesheet" href="matchup-preview.css?v=1">
   <script defer src="draft-data.js"></script>
   <script defer src="meta.js"></script>
   <script defer src="draft-analyzer.js"></script>
   <script defer src="ban-suggestions.js?v=1"></script>
-  <script defer src="pick-suggestions.js?v=2"></script>
-  <script defer src="simulador.js?v=2"></script>
+  <script defer src="matchup-preview.js?v=1"></script>
+  <script defer src="pick-suggestions.js?v=3"></script>
+  <script defer src="simulador.js?v=3"></script>
 </head>
 <body>
   <a class="skip-link" href="#sim-board">Ir para as escalações</a>
@@ -27,7 +29,6 @@
   <main class="sim-layout">
     <div class="sim-heading">
       <div><h1>Simulador de draft</h1><p>Monte as duas composições e acompanhe o que pesa em cada escolha.</p></div>
-      <button type="button" id="sim-reset" class="sim-secondary" disabled>Reiniciar draft</button>
     </div>
     <section class="sim-scoreboard" aria-label="Saldo do draft">
       <div class="sim-score-result" aria-live="polite" aria-atomic="true">
@@ -39,16 +40,20 @@
         <p id="sim-meta-context"></p>
       </div>
     </section>
-    <section id="sim-board" class="sim-board" aria-label="Escalações e banimentos" tabindex="-1">
+    <section id="sim-board" class="sim-board" aria-labelledby="sim-board-title" tabindex="-1">
+      <div class="sim-board-toolbar">
+        <h2 id="sim-board-title">Picks e bans</h2>
+        <button type="button" id="sim-reset" class="sim-secondary" aria-haspopup="dialog" disabled><span aria-hidden="true">↺</span> Limpar picks e bans</button>
+      </div>
       <section class="sim-team" data-team="ally" aria-labelledby="sim-ally-title">
-        <div class="team-heading"><h2 id="sim-ally-title">Seu time</h2><span id="sim-counter-ally"></span></div>
+        <div class="team-heading"><h3 id="sim-ally-title">Seu time</h3><span id="sim-counter-ally"></span></div>
         <div id="sim-picks-ally" class="sim-picks" aria-label="Escolhas do seu time"></div>
-        <h3 class="bans-title">Banimentos</h3><div id="sim-bans-ally" class="sim-bans" aria-label="Banimentos do seu time"></div>
+        <h4 class="bans-title">Banimentos</h4><div id="sim-bans-ally" class="sim-bans" aria-label="Banimentos do seu time"></div>
       </section>
       <section class="sim-team" data-team="enemy" aria-labelledby="sim-enemy-title">
-        <div class="team-heading"><h2 id="sim-enemy-title">Adversário</h2><span id="sim-counter-enemy"></span></div>
+        <div class="team-heading"><h3 id="sim-enemy-title">Adversário</h3><span id="sim-counter-enemy"></span></div>
         <div id="sim-picks-enemy" class="sim-picks" aria-label="Escolhas do adversário"></div>
-        <h3 class="bans-title">Banimentos</h3><div id="sim-bans-enemy" class="sim-bans" aria-label="Banimentos do adversário"></div>
+        <h4 class="bans-title">Banimentos</h4><div id="sim-bans-enemy" class="sim-bans" aria-label="Banimentos do adversário"></div>
       </section>
     </section>
     <section id="pick-suggestions" class="sim-panel" aria-label="Sugestões de picks e bans"></section>
@@ -68,9 +73,9 @@
     <div class="picker-info"><span id="sim-pool-count"></span><button type="button" id="sim-remove" class="sim-text" hidden>Remover deste slot</button></div>
     <div id="sim-pool" class="sim-pool"></div><p id="sim-pool-empty" class="sim-hint" hidden>Nenhum campeão encontrado.</p>
   </dialog>
-  <dialog id="sim-reset-dialog" aria-labelledby="reset-title">
-    <h2 id="reset-title">Reiniciar o draft?</h2><p>Os picks e bans dos dois times serão removidos.</p>
-    <div class="reset-actions"><button class="sim-secondary" type="button" id="reset-cancel">Cancelar</button><button class="sim-confirm" type="button" id="reset-confirm">Reiniciar</button></div>
+  <dialog id="sim-reset-dialog" aria-labelledby="reset-title" aria-describedby="reset-description">
+    <h2 id="reset-title">Limpar picks e bans?</h2><p id="reset-description">Remove as escolhas e os banimentos dos dois times.</p>
+    <div class="reset-actions"><button class="sim-secondary" type="button" id="reset-cancel">Cancelar</button><button class="sim-confirm" type="button" id="reset-confirm">Limpar draft</button></div>
   </dialog>
 </body>
 </html>

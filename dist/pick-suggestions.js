@@ -163,6 +163,11 @@
       for(const reason of reasons) list.append(make('li','',reason));
       const use=make('button','suggest-use',selected ? 'Trocar por '+champ.name : (banning ? 'Banir ' : 'Escolher ')+champ.name);
       use.type='button';use.dataset[mode]=champ.id;
+      const matchupLane = banning ? proposal.lane : lane;
+      for (const trigger of [identity, use]) {
+        trigger.dataset.matchupId = champ.id;
+        trigger.dataset.matchupLane = matchupLane;
+      }
       use.addEventListener('click',()=>{
         if(banning) {
           const slot=banSlot;

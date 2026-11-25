@@ -21,7 +21,7 @@
   };
   const signedClass = score => score > 0 ? 'sim-positive' : score < 0 ? 'sim-negative' : 'sim-neutral';
   const blankTeam = () => Object.fromEntries(lanes.map(lane => [lane,null]));
-  const blankDraft = () => ({picks:{ally:blankTeam(),enemy:blankTeam()},bans:{ally:Array(5).fill(null),enemy:Array(5).fill(null)},useMeta:true});
+  const blankDraft = (useMeta = true) => ({picks:{ally:blankTeam(),enemy:blankTeam()},bans:{ally:Array(5).fill(null),enemy:Array(5).fill(null)},useMeta});
   function getJson(name) {
     try { return JSON.parse(localStorage.getItem(name)); } catch { return null; }
   }
@@ -93,7 +93,7 @@
     frame.append(champ ? image(id) : el('span','slot-plus','+'));
     button.append(frame);
     if (kind === 'pick') button.append(el('span','slot-name',champ?.name || ''));
-    return button;
+    return champ ? window.MATCHUP_PREVIEW.wrapSlot(button, champ.id, kind === 'pick' ? slot : null) : button;
   }
 
   function renderTeams() {
@@ -121,6 +121,7 @@
   }
   function renderPool() {
     if (!editing) return;
+    window.MATCHUP_PREVIEW.close();
     const term = textKey(input.value);
     const used = allUsed(), selected = current(editing);
     const isBan = editing.kind === 'ban';
@@ -137,6 +138,8 @@
     $('picker-suggest-list').replaceChildren(...suggestions.map(({champion,lane,reasons}) => {
       const button = el('button',isBan ? 'quick-pick quick-ban' : 'quick-pick');
       button.type = 'button';button.dataset.id = champion.id;
+      button.dataset.matchupId = champion.id;
+      button.dataset.matchupLane = isBan ? lane : editing.slot;
       const reason = isBan ? (reasons || []).join(' ') : '';
       const label = (isBan ? 'Banir ' : 'Escolher ') + champion.name;
       button.title = [label,laneNames[lane],reason].filter(Boolean).join(' · ');
@@ -151,6 +154,8 @@
     for (const champion of pool) {
       const button = el('button','sim-choice');
       button.type = 'button';button.dataset.id = champion.id;
+      button.dataset.matchupId = champion.id;
+      if (!isBan) button.dataset.matchupLane = editing.slot;
       const taken = used.get(champion.id);
       button.disabled = Boolean(taken && champion.id !== selected);
       button.title = champion.name + (taken ? ' · '+taken : '');
@@ -231,6 +236,7 @@
     };
   }
   function render() {
+    window.MATCHUP_PREVIEW.close();
     const setup = suggestionState();
     renderTeams();renderAnalysis(window.DRAFT_ANALYZER.analyze(setup));
     window.PICK_SUGGESTIONS?.render(setup);
@@ -269,9 +275,9 @@
   $('sim-reset').addEventListener('click', () => { $('sim-reset-dialog').showModal(); $('reset-cancel').focus(); });
   $('reset-cancel').addEventListener('click', () => $('sim-reset-dialog').close());
   $('reset-confirm').addEventListener('click', () => {
-    const preference=state.useMeta;state=blankDraft();state.useMeta=preference;
+    state = blankDraft(state.useMeta);
     saveDraft();$('sim-reset-dialog').close();render();
-    $('sim-picks-ally').firstElementChild.focus({preventScroll:true});
+    $('sim-picks-ally').querySelector('.sim-slot').focus({preventScroll:true});
   });
   window.addEventListener('pageshow', () => { readMeta();render(); });
   window.addEventListener('storage', event => {
