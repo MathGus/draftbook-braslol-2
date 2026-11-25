@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10121d">
+  <meta name="description" content="Monte dois times, escolha os bans e acompanhe como confrontos, sinergias e meta pesam no draft de BRASLOL 2.">
+  <title>Simulador de draft | Draftbook</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/fonts/fonts.css">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="simulador.css">
+  <link rel="stylesheet" href="pick-suggestions.css">
+  <script defer src="draft-data.js"></script>
+  <script defer src="meta.js"></script>
+  <script defer src="draft-analyzer.js"></script>
+  <script defer src="pick-suggestions.js"></script>
+  <script defer src="simulador.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#sim-board">Ir para as escalações</a>
+  <header class="masthead"><div class="top-inner">
+    <a class="brand" href="index.html" aria-label="Draftbook, guia de draft"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span><b>DRAFTBOOK</b><span class="game-name">BRASLOL 2</span></a>
+    <nav class="guide-nav" aria-label="Navegação principal"><a href="index.html">Guia de draft</a><a href="meta.html">Meta da carreira</a><a href="simulador.html" aria-current="page">Simulador</a></nav>
+  </div></header>
+  <main class="sim-layout">
+    <div class="sim-heading">
+      <div><h1>Simulador de draft</h1><p>Monte as duas composições e acompanhe o que pesa em cada escolha.</p></div>
+      <button type="button" id="sim-reset" class="sim-secondary" disabled>Reiniciar draft</button>
+    </div>
+    <section class="sim-scoreboard" aria-label="Saldo do draft">
+      <div class="sim-score-result" aria-live="polite" aria-atomic="true">
+        <div class="sim-score-number"><span>Saldo do draft</span><strong id="sim-score">0</strong></div>
+        <div><h2 id="sim-verdict">Aguardando picks</h2><p id="sim-progress">0 de 10 picks · 0 de 10 bans</p></div>
+      </div>
+      <div class="sim-meta-controls">
+        <label for="sim-use-meta"><input type="checkbox" id="sim-use-meta"> Usar meta da carreira</label>
+        <p id="sim-meta-context"></p>
+      </div>
+    </section>
+    <section id="sim-board" class="sim-board" aria-label="Escalações e banimentos" tabindex="-1">
+      <section class="sim-team" data-team="ally" aria-labelledby="sim-ally-title">
+        <div class="team-heading"><h2 id="sim-ally-title">Seu time</h2><span id="sim-counter-ally"></span></div>
+        <div id="sim-picks-ally" class="sim-picks" aria-label="Escolhas do seu time"></div>
+        <h3 class="bans-title">Banimentos</h3><div id="sim-bans-ally" class="sim-bans" aria-label="Banimentos do seu time"></div>
+      </section>
+      <section class="sim-team" data-team="enemy" aria-labelledby="sim-enemy-title">
+        <div class="team-heading"><h2 id="sim-enemy-title">Adversário</h2><span id="sim-counter-enemy"></span></div>
+        <div id="sim-picks-enemy" class="sim-picks" aria-label="Escolhas do adversário"></div>
+        <h3 class="bans-title">Banimentos</h3><div id="sim-bans-enemy" class="sim-bans" aria-label="Banimentos do adversário"></div>
+      </section>
+    </section>
+    <section id="pick-suggestions" class="sim-panel" aria-label="Picks sugeridos"></section>
+    <section aria-labelledby="sim-analysis-title">
+      <div class="sim-analysis-heading"><h2 id="sim-analysis-title">Leitura do draft</h2><span id="sim-analysis-state"></span></div>
+      <p class="sim-hint" id="sim-analysis-hint"></p>
+      <div id="sim-analysis" class="sim-analysis"></div>
+    </section>
+    <footer class="sheet-footer">Cálculo de draft do BRASLOL 2 <span aria-hidden="true">·</span> Arte dos campeões por Riot Games</footer>
+    <noscript>Ative o JavaScript para escolher campeões e analisar o draft.</noscript>
+  </main>
+  <dialog id="sim-picker" class="sim-picker" aria-labelledby="sim-picker-title">
+    <div class="picker-header"><div><p id="sim-picker-context"></p><h2 id="sim-picker-title">Escolher campeão</h2></div><button id="picker-close" class="icon-only" type="button" aria-label="Fechar seleção">×</button></div>
+    <input type="search" id="sim-search" autocomplete="off" aria-label="Buscar campeão" placeholder="Buscar campeão">
+    <label id="sim-flex-control" class="sim-flex-control"><input id="sim-allow-flex" type="checkbox"> Incluir outras rotas</label>
+    <section class="picker-suggest" id="picker-suggest" hidden aria-label="Sugestões para esta posição"><h3>Sugeridos para este pick</h3><div id="picker-suggest-list"></div></section>
+    <div class="picker-info"><span id="sim-pool-count"></span><button type="button" id="sim-remove" class="sim-text" hidden>Remover deste slot</button></div>
+    <div id="sim-pool" class="sim-pool"></div><p id="sim-pool-empty" class="sim-hint" hidden>Nenhum campeão encontrado.</p>
+  </dialog>
+  <dialog id="sim-reset-dialog" aria-labelledby="reset-title">
+    <h2 id="reset-title">Reiniciar o draft?</h2><p>Os picks e bans dos dois times serão removidos.</p>
+    <div class="reset-actions"><button class="sim-secondary" type="button" id="reset-cancel">Cancelar</button><button class="sim-confirm" type="button" id="reset-confirm">Reiniciar</button></div>
+  </dialog>
+</body>
+</html>

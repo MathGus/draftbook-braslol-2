@@ -90,11 +90,15 @@ const champions = tables.champions.map(({id, name, lanes: championLanes}) => {
     const relation = ids => [...new Set(ids)].filter(other => other !== id && byId.get(other)?.lanes.includes(lane)).slice(0, 3);
     matchups[lane] = {strong: relation(raw[0]), weak: relation(raw[1])};
   }
-  const [early, mid, late, , , roles] = tables.profiles[id];
-  const damage = tables.utility[id][2];
+  const [early, mid, late, , objectivePressure, roles] = tables.profiles[id];
+  const [cc, range, damage, escape, wave, objective, earlyObjective] = tables.utility[id];
   for (const phase of [early, mid, late]) assert.ok(Number.isFinite(phase) && phase >= 0 && phase <= 100);
   assert.ok(Array.isArray(roles) && ['AD', 'AP', 'H'].includes(damage));
-  return {id, name, lanes: championLanes, matchups, synergies: [], profile: {early, mid, late, roles, damage}};
+  for (const value of [cc, range, escape, wave, objective, earlyObjective]) {
+    assert.ok(value >= 0 && value <= 5 && Number.isInteger(value * 2));
+  }
+  return {id, name, lanes: championLanes, matchups, synergies: [],
+    profile: {early, mid, late, roles, damage, objectivePressure, cc, range, escape, wave, objective, earlyObjective}};
 });
 
 const resultById = new Map(champions.map(champion => [champion.id, champion]));
