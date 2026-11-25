@@ -11,7 +11,6 @@ from urllib.request import Request, urlopen
 
 from PIL import Image, ImageOps
 
-
 GAME = "https://braslol2.pages.dev/js/data/"
 CDN = "https://ddragon.leagueoflegends.com/cdn/"
 ASSETS = Path(__file__).resolve().parents[1] / "dist" / "assets"
@@ -50,23 +49,45 @@ def main():
     for directory in [icons, splashes]:
         directory.mkdir(parents=True, exist_ok=True)
     official = json.loads(read_url(f"{CDN}{version[1]}/data/pt_BR/champion.json"))["data"]
-    metadata = {champion: {key: official[champion][key] for key in ("title", "tags")} for champion in champions}
+    metadata = {
+        champion: {key: official[champion][key] for key in ("title", "tags")}
+        for champion in champions
+    }
     (ASSETS / "champion-metadata.js").write_text(
-        "window.CHAMPION_META = " + json.dumps(metadata, ensure_ascii=False, indent=2) + ";\n",
+        "window.CHAMPION_META = "
+        + json.dumps(metadata, ensure_ascii=False, indent=2)
+        + ";\n",
         encoding="utf-8",
     )
     jobs = []
     for champion in champions:
         # O Data Dragon distingue a capitalização do ícone e da ilustração.
         art_name = "FiddleSticks" if champion == "Fiddlesticks" else champion
-        jobs.append((f"{CDN}{version[1]}/img/champion/{champion}.png", icons / f"{champion}.webp", (108, 108), 85))
-        jobs.append((f"{CDN}img/champion/splash/{art_name}_0.jpg", splashes / f"{champion}.webp", (768, 452), 72))
+        jobs.append(
+            (
+                f"{CDN}{version[1]}/img/champion/{champion}.png",
+                icons / f"{champion}.webp",
+                (108, 108),
+                85,
+            )
+        )
+        jobs.append(
+            (
+                f"{CDN}img/champion/splash/{art_name}_0.jpg",
+                splashes / f"{champion}.webp",
+                (768, 452),
+                72,
+            )
+        )
 
     with ThreadPoolExecutor(max_workers=10) as pool:
         futures = [pool.submit(make_image, *job) for job in jobs]
         for future in futures:
             future.result()
-    print(f"{len(champions)} campeões, {sum(job[1].stat().st_size for job in jobs):,} bytes de arte.")
+    print(
+        f"{len(champions)} campeões, "
+        f"{sum(job[1].stat().st_size for job in jobs):,} bytes de arte."
+    )
 
 
 if __name__ == "__main__":

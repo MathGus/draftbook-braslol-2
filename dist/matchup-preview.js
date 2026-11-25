@@ -1,8 +1,14 @@
 (() => {
   'use strict';
 
-  const byId = new Map(window.DRAFT_DATA.champions.map(champion => [champion.id, champion]));
-  const laneNames = { Top: 'Topo', Jungle: 'Selva', Mid: 'Meio', ADC: 'Atirador', Support: 'Suporte' };
+  const byId = new Map(window.DRAFT_DATA.champions.map((champion) => [champion.id, champion]));
+  const laneNames = {
+    Top: 'Topo',
+    Jungle: 'Selva',
+    Mid: 'Meio',
+    ADC: 'Atirador',
+    Support: 'Suporte',
+  };
   const selector = '[data-matchup-id]';
   const card = element('aside', 'matchup-preview');
   card.id = 'matchup-preview';
@@ -40,7 +46,10 @@
     const group = element('div', className);
     const list = element('ul');
     for (const id of ids) list.append(element('li', '', byId.get(id).name));
-    group.append(element('strong', '', label), ids.length ? list : element('span', '', 'Nenhum cadastrado'));
+    group.append(
+      element('strong', '', label),
+      ids.length ? list : element('span', '', 'Nenhum cadastrado'),
+    );
     return group;
   }
 
@@ -53,7 +62,13 @@
     card.replaceChildren(heading);
     const offRole = lane && !champion.matchups[lane];
     if (offRole) {
-      card.append(element('p', 'matchup-unlisted', 'Sem ficha de confrontos na posição escolhida (' + laneNames[lane] + ').'));
+      card.append(
+        element(
+          'p',
+          'matchup-unlisted',
+          'Sem ficha de confrontos na posição escolhida (' + laneNames[lane] + ').',
+        ),
+      );
     }
     const positions = offRole ? [champion.lanes[0]] : lane ? [lane] : champion.lanes;
     for (const position of positions) {
@@ -61,8 +76,10 @@
       const section = element('section', 'matchup-route');
       section.append(element('h3', '', laneNames[position] + (offRole ? ' · rota principal' : '')));
       const columns = element('div', 'matchup-columns');
-      columns.append(opponents('Forte contra', sheet.strong, 'matchup-strong'),
-        opponents('Fraco contra', sheet.weak, 'matchup-weak'));
+      columns.append(
+        opponents('Forte contra', sheet.strong, 'matchup-strong'),
+        opponents('Fraco contra', sheet.weak, 'matchup-weak'),
+      );
       section.append(columns);
       card.append(section);
     }
@@ -77,10 +94,14 @@
     const below = height - box.bottom - margin * 2;
     const dialog = anchor.closest('dialog')?.getBoundingClientRect();
     const beside = dialog && width - dialog.right >= card.offsetWidth + margin * 2;
-    card.style.maxHeight = Math.max(0, beside ? height - margin * 2 : Math.max(above, below)) + 'px';
+    card.style.maxHeight =
+      Math.max(0, beside ? height - margin * 2 : Math.max(above, below)) + 'px';
     const left = beside ? dialog.right + margin : box.left + (box.width - card.offsetWidth) / 2;
-    const top = beside ? box.top : below >= card.offsetHeight || below >= above
-      ? box.bottom + margin : box.top - margin - card.offsetHeight;
+    const top = beside
+      ? box.top
+      : below >= card.offsetHeight || below >= above
+        ? box.bottom + margin
+        : box.top - margin - card.offsetHeight;
     card.style.left = Math.max(margin, Math.min(left, width - card.offsetWidth - margin)) + 'px';
     card.style.top = Math.max(margin, Math.min(top, height - card.offsetHeight - margin)) + 'px';
   }
@@ -122,7 +143,7 @@
     target.setAttribute('aria-describedby', card.id);
   }
 
-  document.addEventListener('pointerover', event => {
+  document.addEventListener('pointerover', (event) => {
     if (event.pointerType === 'touch') return;
     if (card.contains(event.target)) {
       clearTimeout(leaveTimer);
@@ -131,7 +152,7 @@
     const target = event.target.closest(selector);
     if (target) open(target);
   });
-  document.addEventListener('pointerout', event => {
+  document.addEventListener('pointerout', (event) => {
     if (!anchor || pinned || event.pointerType === 'touch') return;
     if (!anchor.contains(event.target) && !card.contains(event.target)) return;
     const next = event.relatedTarget;
@@ -139,33 +160,41 @@
     clearTimeout(leaveTimer);
     leaveTimer = setTimeout(close, 160);
   });
-  document.addEventListener('focusin', event => {
+  document.addEventListener('focusin', (event) => {
     const target = event.target.closest(selector);
     if (target?.matches(':focus-visible')) open(target);
     else if (target !== anchor) close();
   });
-  document.addEventListener('focusout', event => {
+  document.addEventListener('focusout', (event) => {
     if (event.target === anchor && !pinned) close();
   });
-  document.addEventListener('click', event => {
-    const info = event.target.closest('.matchup-info');
-    if (info) {
-      if (anchor === info && pinned) close();
-      else open(info, true);
-    } else if (!card.contains(event.target)) {
-      close();
-    }
-  }, true);
-  document.addEventListener('keydown', event => {
+  document.addEventListener(
+    'click',
+    (event) => {
+      const info = event.target.closest('.matchup-info');
+      if (info) {
+        if (anchor === info && pinned) close();
+        else open(info, true);
+      } else if (!card.contains(event.target)) {
+        close();
+      }
+    },
+    true,
+  );
+  document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape' && anchor) {
       close();
       event.preventDefault();
     }
   });
-  document.addEventListener('scroll', event => {
-    if (anchor && !card.contains(event.target)) close();
-  }, true);
+  document.addEventListener(
+    'scroll',
+    (event) => {
+      if (anchor && !card.contains(event.target)) close();
+    },
+    true,
+  );
   document.addEventListener('close', close, true);
   window.addEventListener('resize', close);
-  window.MATCHUP_PREVIEW = Object.freeze({wrapSlot, close});
+  window.MATCHUP_PREVIEW = Object.freeze({ wrapSlot, close });
 })();

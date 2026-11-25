@@ -24,6 +24,16 @@ python -m http.server 8000 --bind 127.0.0.1 --directory dist
 
 Abra [o guia local](http://127.0.0.1:8000/). O fluxo do GitHub Actions publica o conteúdo de `dist/` no GitHub Pages. [Configuração da publicação](.github/workflows/pages.yml)
 
+## Formatação do código
+
+Execute o comando abaixo na raiz do repositório para formatar o JavaScript, o HTML e o CSS.
+
+```sh
+npx prettier@3.6.2 --write "dist/**/*.{js,html,css}" "scripts/*.mjs"
+```
+
+Os scripts de atualização já gravam as tabelas de campeões com dois espaços de indentação.
+
 ## Dados e créditos
 
 - As fichas de confronto, sinergias, perfis e regras de meta vêm do BRASLOL 2. [Jogo](https://braslol2.pages.dev/) · [Importação das tabelas](scripts/atualizar-dados.mjs)

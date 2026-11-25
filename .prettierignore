@@ -1,0 +1,3 @@
+# Os scripts de atualização já gravam essas tabelas com indentação de dois espaços.
+dist/draft-data.js
+dist/assets/champion-metadata.js
