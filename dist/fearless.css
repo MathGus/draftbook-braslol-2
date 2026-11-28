@@ -131,6 +131,59 @@
 #series-history-list .series-enemy {
   color: var(--coral);
 }
+#series-locks {
+  grid-column: 1 / -1;
+}
+.series-locks-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.75rem;
+}
+.series-locks-heading h3 {
+  margin: 0;
+}
+#series-locks-count,
+#series-locks-empty {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+#series-locks-empty {
+  margin-top: 0.35rem;
+}
+#series-locks-games h4 {
+  margin: 0.8rem 0 0.45rem;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+#series-locks-games ul {
+  display: grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  gap: 0.65rem 0.3rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+#series-locks-games li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  text-align: center;
+  overflow-wrap: anywhere;
+  font: 600 0.79rem/1.2 var(--body);
+}
+#series-locks-games img {
+  max-width: 100%;
+  object-fit: cover;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+}
+@media (max-width: 750px) {
+  #series-locks-games ul {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
 @media (max-width: 630px) {
   .series-body {
     gap: 0.8rem;

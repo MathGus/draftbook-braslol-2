@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="assets/fonts/fonts.css" />
     <link rel="stylesheet" href="style.css?v=3" />
     <link rel="stylesheet" href="simulador.css?v=5" />
-    <link rel="stylesheet" href="fearless.css?v=1" />
+    <link rel="stylesheet" href="fearless.css?v=2" />
     <link rel="stylesheet" href="pick-suggestions.css?v=2" />
     <link rel="stylesheet" href="matchup-preview.css?v=1" />
     <link rel="stylesheet" href="publicidade.css" />
@@ -25,7 +25,7 @@
     <script defer src="draft-swap.js?v=2"></script>
     <script defer src="pick-suggestions.js?v=4"></script>
     <script defer src="fearless.js?v=1"></script>
-    <script defer src="fearless-view.js?v=1"></script>
+    <script defer src="fearless-view.js?v=2"></script>
     <script defer src="simulador.js?v=5"></script>
     <script defer src="publicidade.js"></script>
   </head>
@@ -156,6 +156,14 @@
           <div id="sim-picks-enemy" class="sim-picks" aria-label="Escolhas do adversário"></div>
           <h4 class="bans-title">Banimentos</h4>
           <div id="sim-bans-enemy" class="sim-bans" aria-label="Banimentos do adversário"></div>
+        </section>
+        <section id="series-locks" class="sim-panel" aria-labelledby="series-locks-title" hidden>
+          <div class="series-locks-heading">
+            <h3 id="series-locks-title">Bloqueados pelo Fearless</h3>
+            <span id="series-locks-count"></span>
+          </div>
+          <p id="series-locks-empty">Nenhum campeão bloqueado no primeiro jogo.</p>
+          <div id="series-locks-games"></div>
         </section>
       </section>
       <section

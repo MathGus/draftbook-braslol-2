@@ -30,6 +30,32 @@
     );
   }
 
+  function renderLocks(series) {
+    const locks = window.FEARLESS.locks(series);
+    const lists = new Map();
+    const groups = document.createDocumentFragment();
+    for (const [id, game] of locks) {
+      if (!lists.has(game)) {
+        const heading = document.createElement('h4');
+        heading.textContent = 'Jogo ' + game;
+        const list = document.createElement('ul');
+        list.setAttribute('aria-label', 'Campeões escolhidos no jogo ' + game);
+        groups.append(heading, list);
+        lists.set(game, list);
+      }
+      const item = document.createElement('li');
+      const portrait = document.createElement('img');
+      portrait.src = 'assets/champions/' + encodeURIComponent(id) + '.webp';
+      portrait.width = portrait.height = 36;
+      portrait.alt = '';
+      item.append(portrait, names.get(id));
+      lists.get(game).append(item);
+    }
+    byId('series-locks-count').textContent = locks.size ? locks.size + ' campeões' : '';
+    byId('series-locks-empty').hidden = locks.size > 0;
+    byId('series-locks-games').replaceChildren(groups);
+  }
+
   function bind({ onFormat, onResult, onUndo, onRestart }) {
     const format = byId('series-format');
     const gameHeading = byId('series-game');
@@ -111,6 +137,7 @@
       const active = series.bestOf > 1;
       format.value = String(series.bestOf);
       byId('series-panel').hidden = !active;
+      byId('series-locks').hidden = !active;
       if (!active) {
         history.open = false;
         return;
@@ -138,6 +165,7 @@
       history.hidden = !hasHistory;
       if (!hasHistory) history.open = false;
       if (renderedHistory !== series.history) {
+        renderLocks(series);
         byId('series-history-list').replaceChildren(...series.history.map(historyItem));
         renderedHistory = series.history;
       }
