@@ -2,7 +2,7 @@
   'use strict';
 
   function bind(board, swap) {
-    const pick = '.sim-slot[data-kind="pick"]';
+    const pick = '.sim-slot[data-kind="pick"]:enabled';
     let drag = null;
     let suppressClick = false;
 

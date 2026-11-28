@@ -13,17 +13,20 @@
     <link rel="stylesheet" href="assets/fonts/fonts.css" />
     <link rel="stylesheet" href="style.css?v=3" />
     <link rel="stylesheet" href="simulador.css?v=5" />
+    <link rel="stylesheet" href="fearless.css?v=1" />
     <link rel="stylesheet" href="pick-suggestions.css?v=2" />
     <link rel="stylesheet" href="matchup-preview.css?v=1" />
     <link rel="stylesheet" href="publicidade.css" />
     <script defer src="draft-data.js"></script>
     <script defer src="meta.js?v=2"></script>
     <script defer src="draft-analyzer.js"></script>
-    <script defer src="ban-suggestions.js?v=1"></script>
+    <script defer src="ban-suggestions.js?v=2"></script>
     <script defer src="matchup-preview.js?v=1"></script>
-    <script defer src="draft-swap.js?v=1"></script>
-    <script defer src="pick-suggestions.js?v=3"></script>
-    <script defer src="simulador.js?v=4"></script>
+    <script defer src="draft-swap.js?v=2"></script>
+    <script defer src="pick-suggestions.js?v=4"></script>
+    <script defer src="fearless.js?v=1"></script>
+    <script defer src="fearless-view.js?v=1"></script>
+    <script defer src="simulador.js?v=5"></script>
     <script defer src="publicidade.js"></script>
   </head>
   <body>
@@ -48,7 +51,56 @@
           <h1>Simulador de draft</h1>
           <p>Monte as duas composições e acompanhe o que pesa em cada escolha.</p>
         </div>
+        <label class="series-format" for="series-format">
+          Formato
+          <select id="series-format">
+            <option value="1">Partida única</option>
+            <option value="3">MD3 · Fearless</option>
+            <option value="5">MD5 · Fearless</option>
+          </select>
+        </label>
       </div>
+      <section class="series-panel" id="series-panel" aria-labelledby="series-game" hidden>
+        <div class="series-body">
+          <div>
+            <div class="series-status" aria-live="polite" aria-atomic="true">
+              <h2 id="series-game" tabindex="-1"></h2>
+              <p id="series-score"></p>
+            </div>
+            <p class="series-rule">
+              Cada pick fica bloqueado para os dois times até o fim da série. Os bans valem só para
+              o jogo atual.
+            </p>
+          </div>
+          <div
+            class="series-result"
+            id="series-result"
+            role="group"
+            aria-labelledby="series-question"
+          >
+            <p id="series-question"></p>
+            <div class="series-actions">
+              <button class="sim-secondary" type="button" id="series-result-ally">Seu time</button>
+              <button class="sim-secondary" type="button" id="series-result-enemy">
+                Adversário
+              </button>
+            </div>
+            <p class="series-hint" id="series-hint">
+              Complete os dez picks para registrar o resultado.
+            </p>
+          </div>
+        </div>
+        <div class="series-tools" id="series-tools">
+          <details id="series-history" hidden>
+            <summary>Histórico da série</summary>
+            <ol id="series-history-list"></ol>
+          </details>
+          <div class="series-actions">
+            <button type="button" id="series-undo" hidden>Desfazer último resultado</button>
+            <button type="button" id="series-restart" aria-haspopup="dialog">Nova série</button>
+          </div>
+        </div>
+      </section>
       <section class="sim-scoreboard" aria-label="Saldo do draft">
         <div class="sim-score-result" aria-live="polite" aria-atomic="true">
           <div class="sim-score-number">
@@ -184,6 +236,18 @@
       <div class="reset-actions">
         <button class="sim-secondary" type="button" id="reset-cancel">Cancelar</button>
         <button class="sim-confirm" type="button" id="reset-confirm">Limpar draft</button>
+      </div>
+    </dialog>
+    <dialog
+      id="series-dialog"
+      aria-labelledby="series-dialog-title"
+      aria-describedby="series-dialog-description"
+    >
+      <h2 id="series-dialog-title"></h2>
+      <p id="series-dialog-description"></p>
+      <div class="reset-actions">
+        <button type="button" class="sim-secondary" id="series-cancel" autofocus>Cancelar</button>
+        <button type="button" class="sim-confirm" id="series-confirm"></button>
       </div>
     </dialog>
   </body>

@@ -31,6 +31,7 @@
       ...Object.values(setup.ally),
       ...Object.values(setup.enemy),
       ...setup.bans,
+      ...(setup.seriesLocks?.keys() || []),
     ]);
     const direction = forSide === 'ally' ? 1 : -1;
     const pool = champions.filter((champ) => champ.lanes.includes(forLane) && !taken.has(champ.id));

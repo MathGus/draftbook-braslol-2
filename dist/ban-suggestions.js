@@ -83,6 +83,7 @@
       ...Object.values(setup.ally || {}),
       ...Object.values(setup.enemy || {}),
       ...(setup.bans || []),
+      ...(setup.seriesLocks?.keys() || []),
     ]);
     const sign = pickingSide === 'ally' ? 1 : -1;
     const proposals = [];

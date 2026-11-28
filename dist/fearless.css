@@ -1,0 +1,145 @@
+.sim-heading {
+  flex-wrap: wrap;
+}
+.series-format {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+.series-format select {
+  padding: 0.5rem 0.7rem;
+  color: var(--ink);
+  border: 1px solid #424959;
+  border-radius: 6px;
+  background: var(--surface);
+}
+.series-panel {
+  margin-bottom: 1rem;
+  padding: clamp(0.9rem, 1.6vw, 1.35rem);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--aqua);
+  border-radius: 11px;
+  background: var(--surface);
+}
+.series-body,
+.series-status,
+.series-tools,
+.series-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem 1rem;
+}
+.series-body,
+.series-tools {
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.series-status h2,
+#series-dialog h2 {
+  font: 700 clamp(1.6rem, 2.3vw, 2rem) / 1.1 var(--display);
+}
+#series-score {
+  padding: 0.28rem 0.6rem;
+  border-radius: 5px;
+  color: var(--ink);
+  background: var(--raised);
+  font-size: 0.91rem;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+.series-rule,
+.series-hint {
+  color: var(--muted);
+  font-size: 0.87rem;
+}
+.series-rule {
+  max-width: 36rem;
+  margin-top: 0.45rem;
+}
+.series-result {
+  display: grid;
+  gap: 0.4rem;
+}
+#series-question {
+  font-size: 0.92rem;
+  font-weight: 650;
+}
+.series-actions {
+  gap: 0.4rem 0.55rem;
+}
+#series-result-ally:enabled {
+  color: var(--aqua);
+}
+#series-result-enemy:enabled {
+  color: var(--coral);
+}
+.series-tools {
+  gap: 0.5rem 0.9rem;
+  margin-top: 0.8rem;
+  border-top: 1px solid var(--line);
+  padding-top: 0.55rem;
+}
+.series-tools details {
+  flex: 1 1 20rem;
+  min-width: 0;
+}
+.series-tools summary,
+.series-tools button {
+  color: var(--muted);
+  font-size: 0.87rem;
+  font-weight: 650;
+  padding: 0.3rem 0;
+}
+.series-tools summary {
+  width: fit-content;
+  cursor: pointer;
+}
+.series-tools summary::marker {
+  color: var(--aqua);
+}
+.series-tools button:hover:enabled,
+.series-tools summary:hover {
+  color: var(--ink);
+}
+.series-tools > .series-actions {
+  gap: 0.3rem 1rem;
+}
+#series-history-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.88rem;
+}
+#series-history-list li {
+  margin-top: 0.5rem;
+  padding-left: 0.7rem;
+  border-left: 2px solid var(--line);
+}
+#series-history-list p {
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+#series-history-list b {
+  font-weight: 600;
+}
+#series-history-list .series-ally {
+  color: var(--aqua);
+}
+#series-history-list .series-enemy {
+  color: var(--coral);
+}
+@media (max-width: 630px) {
+  .series-body {
+    gap: 0.8rem;
+    flex-direction: column;
+  }
+  .series-tools {
+    flex-direction: column;
+  }
+  .series-tools details {
+    flex: auto;
+  }
+}

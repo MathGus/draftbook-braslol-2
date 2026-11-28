@@ -10,9 +10,11 @@ O Draftbook ajuda a consultar um campeão depois do pick e a decidir a próxima 
 | Planejar picks e bans | Preencha as duas escalações para comparar o saldo e ver até três sugestões de pick ou ban. Arraste um pick para outra rota do mesmo time para simular uma troca. No celular, abra o pick e toque em **Mover de rota**. [Simulador](https://mathgus.github.io/draftbook-braslol-2/simulador.html) |
 | Consultar o meta de uma carreira | Importe o save JSON exportado pelo jogo. Escolha a data e a rota, depois clique em **Usar no simulador** para aplicar os tiers ao draft. [Meta da carreira](https://mathgus.github.io/draftbook-braslol-2/meta.html) |
 
+Para simular uma série Fearless, escolha **MD3** ou **MD5**. Depois dos dez picks, marque quem venceu a partida. Os campeões escolhidos pelos dois times ficam bloqueados até o fim da série e saem das sugestões de pick e ban. Os campeões que foram apenas banidos voltam a ficar disponíveis no jogo seguinte. O simulador guarda o placar e os drafts neste navegador. Você pode reabrir a última partida para corrigir o resultado.
+
 A seed do save determina os tiers base por temporada, etapa e rota. A data sugere a etapa pelo calendário do jogo. Se a competição da sua carreira mudou em outro dia, escolha a etapa manualmente. A consulta do dia salvo também mostra os bônus do técnico e as estatísticas já registradas.
 
-O guia lê o JSON no seu navegador. Guarda localmente as informações de meta necessárias à consulta e as escolhas do simulador. Em **Meta da carreira**, use **Limpar** para remover o meta importado. No simulador, **Limpar picks e bans** zera as escalações e os banimentos. O arquivo de save original permanece no seu dispositivo.
+O guia lê o JSON no seu navegador. Guarda localmente as informações de meta necessárias à consulta e as escolhas do simulador. Em **Meta da carreira**, use **Limpar** para remover o meta importado. No simulador, **Limpar picks e bans** zera as escalações e os banimentos da partida atual. O arquivo de save original permanece no seu dispositivo.
 
 ## Executar localmente
 

@@ -1,6 +1,7 @@
 (() => {
   'use strict';
   const { champions, lanes } = window.DRAFT_DATA;
+  const seriesRules = window.FEARLESS;
   const byId = new Map(champions.map((champion) => [champion.id, champion]));
   const byName = [...champions].sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
   const laneNames = {
@@ -53,10 +54,9 @@
   const signedClass = (score) =>
     score > 0 ? 'sim-positive' : score < 0 ? 'sim-negative' : 'sim-neutral';
   const blankTeam = () => Object.fromEntries(lanes.map((lane) => [lane, null]));
-  const blankDraft = (useMeta = true) => ({
+  const blankBoard = () => ({
     picks: { ally: blankTeam(), enemy: blankTeam() },
     bans: { ally: Array(5).fill(null), enemy: Array(5).fill(null) },
-    useMeta,
   });
   function getJson(name) {
     try {
@@ -65,22 +65,19 @@
       return null;
     }
   }
-  function restoreDraft() {
-    const next = blankDraft(),
-      saved = getJson(draftKey);
-    if (!saved) return next;
-    next.useMeta = saved.useMeta !== false;
-    const used = new Set();
+  function readBoard(saved, excluded) {
+    const next = blankBoard();
+    const used = new Set(excluded);
     for (const side of sides) {
       for (const lane of lanes) {
-        const id = saved.picks?.[side]?.[lane];
+        const id = saved?.picks?.[side]?.[lane];
         if (!used.has(id) && byId.has(id)) {
           next.picks[side][lane] = id;
           used.add(id);
         }
       }
       for (let i = 0; i < 5; i++) {
-        const id = saved.bans?.[side]?.[i];
+        const id = saved?.bans?.[side]?.[i];
         if (!used.has(id) && byId.has(id)) {
           next.bans[side][i] = id;
           used.add(id);
@@ -88,6 +85,16 @@
       }
     }
     return next;
+  }
+  function restoreDraft() {
+    const saved = getJson(draftKey);
+    const series = seriesRules.restore(saved?.series, readBoard);
+    const board = seriesRules.finished(series) ? series.history.at(-1) : saved;
+    return {
+      ...readBoard(board, seriesRules.locks(series).keys()),
+      useMeta: saved?.useMeta !== false,
+      series,
+    };
   }
   let state = restoreDraft(),
     meta = null,
@@ -148,6 +155,9 @@
   }
   function allUsed() {
     const used = new Map();
+    for (const [id, game] of seriesRules.locks(state.series)) {
+      used.set(id, 'Fearless · Jogo ' + game);
+    }
     for (const side of sides) {
       for (const lane of lanes)
         if (state.picks[side][lane])
@@ -159,7 +169,7 @@
   const current = (slot) =>
     slot.kind === 'pick' ? state.picks[slot.side][slot.slot] : state.bans[slot.side][slot.slot];
   function change(slot, id) {
-    if (!slot || !sides.includes(slot.side)) return false;
+    if (seriesRules.finished(state.series) || !slot || !sides.includes(slot.side)) return false;
     const isPick = slot.kind === 'pick';
     if (
       isPick
@@ -183,6 +193,7 @@
     return img;
   }
   function movePick(side, from, to, expectedId) {
+    if (seriesRules.finished(state.series)) return false;
     if (!sides.includes(side) || !lanes.includes(from) || !lanes.includes(to) || from === to)
       return false;
     const team = state.picks[side];
@@ -232,6 +243,7 @@
     const label = kind === 'pick' ? laneNames[slot] : 'Ban ' + (Number(slot) + 1);
     const button = el('button', 'sim-slot');
     button.type = 'button';
+    button.disabled = seriesRules.finished(state.series);
     Object.assign(button.dataset, { side, kind, slot, filled: String(Boolean(id)) });
     const accessibleName =
       sideNames[side] + ' · ' + label + ' · ' + (champ ? champ.name : 'Selecionar campeão');
@@ -261,6 +273,7 @@
     }
   }
   function showPicker(slot) {
+    if (seriesRules.finished(state.series)) return;
     editing = slot;
     if (slot.kind === 'pick') window.PICK_SUGGESTIONS?.focusSlot?.(slot.side, slot.slot);
     else window.PICK_SUGGESTIONS?.focusBan?.(slot.side, Number(slot.slot));
@@ -435,7 +448,7 @@
       (result.complete
         ? 'O saldo inclui estrutura e cenários dos dois times.'
         : 'Estrutura e cenários entram no cálculo quando os dez picks estão definidos.');
-    $('sim-reset').disabled = count + bans === 0;
+    $('sim-reset').disabled = count + bans === 0 || seriesRules.finished(state.series);
     const include = $('sim-use-meta');
     include.disabled = !meta;
     include.checked = Boolean(meta && useMeta());
@@ -510,6 +523,7 @@
     return {
       ...state.picks,
       bans: [...state.bans.ally, ...state.bans.enemy].filter(Boolean),
+      seriesLocks: seriesRules.locks(state.series),
       banSlots: state.bans,
       meta: useMeta() ? meta : null,
       onPick: (side, lane, id) => change({ side, kind: 'pick', slot: lane }, id),
@@ -520,11 +534,38 @@
     dragControls.cancel();
     window.MATCHUP_PREVIEW.close();
     const setup = suggestionState();
+    seriesView.render(state);
     renderTeams();
     renderAnalysis(window.DRAFT_ANALYZER.analyze(setup));
-    window.PICK_SUGGESTIONS?.render(setup);
+    const suggestions = $('pick-suggestions');
+    suggestions.hidden = seriesRules.finished(state.series);
+    if (!suggestions.hidden) window.PICK_SUGGESTIONS?.render(setup);
   }
 
+  function updateSeries(series, board) {
+    state = { ...board, useMeta: state.useMeta, series };
+    saveDraft();
+    render();
+  }
+  const seriesView = window.FEARLESS_VIEW.bind({
+    onFormat(bestOf) {
+      if (bestOf === state.series.bestOf) return;
+      const board = state.series.history.length ? blankBoard() : state;
+      updateSeries(seriesRules.empty(bestOf), board);
+    },
+    onResult(winner) {
+      const series = seriesRules.record(state.series, state, winner);
+      if (series) updateSeries(series, seriesRules.finished(series) ? state : blankBoard());
+    },
+    onUndo() {
+      const last = state.series.history.at(-1);
+      const series = seriesRules.undo(state.series);
+      if (series) updateSeries(series, readBoard(last, seriesRules.locks(series).keys()));
+    },
+    onRestart() {
+      updateSeries(seriesRules.empty(state.series.bestOf), blankBoard());
+    },
+  });
   const dragControls = window.DRAFT_SWAP.bind($('sim-board'), movePick);
   $('sim-swap-lane').addEventListener('change', (event) => {
     const lane = event.target.value;
@@ -598,19 +639,23 @@
   });
   $('reset-cancel').addEventListener('click', () => $('sim-reset-dialog').close());
   $('reset-confirm').addEventListener('click', () => {
-    state = blankDraft(state.useMeta);
-    saveDraft();
     $('sim-reset-dialog').close();
-    render();
+    if (seriesRules.finished(state.series)) return;
+    updateSeries(state.series, blankBoard());
     $('sim-picks-ally').querySelector('.sim-slot').focus({ preventScroll: true });
   });
-  window.addEventListener('pageshow', () => {
+  window.addEventListener('pageshow', (event) => {
+    if (event.persisted) state = restoreDraft();
     readMeta();
     render();
   });
   window.addEventListener('storage', (event) => {
     if (event.key === metaKey || event.key === null) readMeta();
-    if (event.key === draftKey || event.key === null) state = restoreDraft();
+    if (event.key === draftKey || event.key === null) {
+      closePicker();
+      if ($('sim-reset-dialog').open) $('sim-reset-dialog').close();
+      state = restoreDraft();
+    }
     render();
     if (picker.open) {
       showMoveControls();
